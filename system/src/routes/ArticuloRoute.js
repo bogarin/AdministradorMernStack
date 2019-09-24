@@ -1,0 +1,11 @@
+import routex from "express-promise-router";
+import CtrlArticulo from "../controllers/ArticuloController";
+const router = routex();
+router.post("/add", CtrlArticulo.add);
+router.get("/query", CtrlArticulo.query);
+router.get("/list", CtrlArticulo.list);
+router.put("/update", CtrlArticulo.update);
+router.put("/activate", CtrlArticulo.activate);
+router.put("/deactivate", CtrlArticulo.deactivate);
+router.delete("/remove", CtrlArticulo.remove);
+module.exports = router;
