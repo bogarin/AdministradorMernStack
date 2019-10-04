@@ -3,7 +3,7 @@ const schema = mongoose.Schema;
 const usuarioSchema = schema({
   rol: { type: String, maxlength: 30, required: true },
   nombre: { type: String, maxlength: 50, required: true, unique: true },
-  topo_documento: { type: String, maxlength: 20 },
+  tipo_documento: { type: String, maxlength: 20 },
   num_documento: { type: String, maxlength: 20 },
   direccion: { type: String, maxlength: 70 },
   telefono: { type: String, maxlength: 20 },
