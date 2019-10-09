@@ -1,9 +1,10 @@
 import Usuario from "../models/Usuario";
 import bcrypt from "bcryptjs";
+import helpers from "../helpers";
 
 async function add(req, res, next) {
   if (req.body != "") {
-      try {
+    try {
       req.body.password = await bcrypt.hash(req.body.password, 10);
       const reg = await Usuario.create(req.body);
       res.status(200).send({
@@ -78,18 +79,10 @@ async function list(req, res, next) {
 
 async function update(req, res, next) {
   try {
+    let oldpwd = await Usuario.findOne({ _id: req.body._id });
     const reg = await Usuario.findByIdAndUpdate(
       { _id: req.body._id },
-      {
-        rol: req.body.rol,
-        nombre: req.body.nombre,
-        tipo_documento: req.body.topo_documento,
-        num_documento: req.body.num_documento,
-        direccion: req.body.direccion,
-        telefono: req.body.telefono,
-        email: req.body.email,
-        password: await bcrypt.hash(req.body.password, 10)
-      }
+      helpers.UserHelpers.CompareToPwdAndUpdateUser(req.body, oldpwd)
     );
     res.status(200).send({ message: reg });
   } catch (e) {
@@ -142,8 +135,33 @@ async function deactivate(req, res, next) {
   }
 }
 
+async function login(req, res, next) {
+  try {
+    let match = await helpers.UserHelpers.validateUserEmail(
+      req,
+      Usuario ,
+       bcrypt 
+    );
+    if (match == -1 ) {
+      res.status(404).send({ message: "No existe el usuario" });
+    }
+    if (!match) {
+      res.status(404).send({message: "contraseña incorrecta" });
+    }
+    res.json("Password Correcto");
+  } catch (err) {
+    res.status(500).send({
+      message: `Èrror en la consulta usuario: ${err}`
+    });
+    next(err);
+  }
+}
+
+
+
 module.exports = {
   add,
+  login,
   query,
   list,
   update,

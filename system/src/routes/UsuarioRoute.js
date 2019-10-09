@@ -1,0 +1,12 @@
+import routex from "express-promise-router";
+import CtrlUsuario from "../controllers/UsuarioControllers";
+const router = routex();
+router.post("/add", CtrlUsuario.add);
+router.post("/login", CtrlUsuario.login);
+router.get("/query", CtrlUsuario.query);
+router.get("/list", CtrlUsuario.list);
+router.put("/update", CtrlUsuario.update);
+router.put("/activate", CtrlUsuario.activate);
+router.put("/deactivate", CtrlUsuario.deactivate);
+router.delete("/remove", CtrlUsuario.remove);
+module.exports = router;
