@@ -12,7 +12,7 @@ mongoose
     useCreateIndex: true,
     useNewUrlParser: true
   })
-  .then(db => console.log("conect..."))
+  .then(db => console.log("conect MongoDB..."))
   .catch(err => console.log(`No conecto por: ${err}`));
 
 //aplication server
@@ -24,9 +24,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/api", routes);
+app.use(morgan("dev"));
+app.use(cors());
 if (config.mode !== "test") {
-  app.use(morgan("dev"));
-  app.use(cors());
-  app.listen(config.port);
+  app.listen(config.port,()=> {
+    console.log(`onectando con el puerto ${config.port} `)
+  });
 }
 module.exports = app;

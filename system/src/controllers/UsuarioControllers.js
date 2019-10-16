@@ -1,6 +1,7 @@
 import Usuario from "../models/Usuario";
 import bcrypt from "bcryptjs";
 import helpers from "../helpers";
+import token from "../services/token"
 
 async function add(req, res, next) {
   if (req.body != "") {
@@ -137,18 +138,20 @@ async function deactivate(req, res, next) {
 
 async function login(req, res, next) {
   try {
-    let match = await helpers.UserHelpers.validateUserEmail(
+    let matchUser = await helpers.UserHelpers.validateUserEmail(
       req,
       Usuario ,
        bcrypt 
     );
-    if (match == -1 ) {
+    if (matchUser == -1 ) {
       res.status(404).send({ message: "No existe el usuario" });
     }
-    if (!match) {
+    if (!matchUser) {
       res.status(404).send({message: "contraseña incorrecta" });
     }
-    res.json("Password Correcto");
+    
+    let tokenReturn = await token.encode(matchUser._id);
+    res.json({matchUser,tokenReturn});
   } catch (err) {
     res.status(500).send({
       message: `Èrror en la consulta usuario: ${err}`
