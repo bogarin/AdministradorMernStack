@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: ./nodejs/Dockerfile
+  #   working_dir: /usr/src/app
+  #   volumes: 
+  #     - ./../system/backEnd/__tests__:/__tests__
+  #     - ./../system/backEnd/public:/public
+  #     - ./../system/backEnd/src:/src
+  #     - ./../system/backEnd/babel.config.js:/babel.config.js
+  #     - ./../system/backEnd/jest.config.js:/jest.config.js
+  #     - ./../system/backEnd/package.json:/package.json
+  #     - ./../system/backEnd/server.js:/server.js
+  #   ports: 
+  #     - ${PORT_NODE}:3001
+  #   command: ${COMANDO}
+
+  mongo:
+    image: mongo
+    container_name: container_mongo
+    restart: always
+    ports:  
+      - 1717:27017
+    volumes:
+      - ./mongo/dataMongoDB:/data/db/
+    # depends_on: 
+    #   - backend
+    networks:
+      - app-network
+  
+  mongo-express:
+    image: mongo-express
+    container_name: container_mexpress
+    restart: always
+    ports:
+      - 8888:8081
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+networks: 
+  app-network:
+    driver: bridge
