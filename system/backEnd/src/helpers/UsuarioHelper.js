@@ -37,7 +37,13 @@ async function validateUserEmail(req,Usuario,bcrypt) {
     }
 }
 
+async function addUserList(Usuario,bcrypt,req) {
+        req.body.password = await bcrypt.hash(req.body.password, 10);
+        return  await Usuario.create(req.body);
+}
+
 module.exports = {
     CompareToPwdAndUpdateUser,
-    validateUserEmail
+    validateUserEmail,
+    addUserList
 }

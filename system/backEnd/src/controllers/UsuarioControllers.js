@@ -1,24 +1,20 @@
 import Usuario from "../models/Usuario";
 import bcrypt from "bcryptjs";
 import helpers from "../helpers";
-import token from "../services/token"
+import token from "../services/token";
 
 async function add(req, res, next) {
-  if (req.body != "") {
-    try {
-      req.body.password = await bcrypt.hash(req.body.password, 10);
-      const reg = await Usuario.create(req.body);
-      res.status(200).send({
-        message: reg
+  if (req.body.nombre != undefined) {
+    return await helpers.UserHelpers.addUserList(Usuario, bcrypt, req)
+      .then(reg => {
+         res.status(200).send({ message: reg });
+      })
+      .catch(e => {
+        res.status(500).send({ message: `Error al capturar: ${e}` });
+        next(e);
       });
-    } catch (e) {
-      res.status(500).send({
-        message: `Error al capturar: ${e}`
-      });
-      next(e);
-    }
   }
-  res.status(404).send("no hay informacion");
+  res.status(404).send({ mesage: "no hay informacion" });
 }
 
 async function query(req, res, next) {
@@ -140,18 +136,18 @@ async function login(req, res, next) {
   try {
     let matchUser = await helpers.UserHelpers.validateUserEmail(
       req,
-      Usuario ,
-       bcrypt 
+      Usuario,
+      bcrypt
     );
-    if (matchUser == -1 ) {
+    if (matchUser == -1) {
       res.status(404).send({ message: "No existe el usuario" });
     }
     if (!matchUser) {
-      res.status(404).send({message: "contraseña incorrecta" });
+      res.status(404).send({ message: "contraseña incorrecta" });
     }
-    
+
     let tokenReturn = await token.encode(matchUser._id);
-    res.json({matchUser,tokenReturn});
+    res.json({ matchUser, tokenReturn });
   } catch (err) {
     res.status(500).send({
       message: `Èrror en la consulta usuario: ${err}`
@@ -159,8 +155,6 @@ async function login(req, res, next) {
     next(err);
   }
 }
-
-
 
 module.exports = {
   add,
