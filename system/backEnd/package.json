@@ -6,6 +6,7 @@
   "scripts": {
     "watch": "nodemon server.js --exec babel-node server.js --ignore __tests__",
     "test": "jest --forceExit --detectOpenHandles",
+    "testWatch":"yarn test --watchAll",
     "dockerWatch":"yarn install && yarn watch",
     "dockerTest":"yarn install && yarn test"
   },

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 const schema = mongoose.Schema;
-const usuarioSchema = schema({
+
+const usuarioSchema = new schema({
   rol: { type: String, maxlength: 30, required: true },
   nombre: { type: String, maxlength: 50, required: true, unique: true },
   tipo_documento: { type: String, maxlength: 20 },

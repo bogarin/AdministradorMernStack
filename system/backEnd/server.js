@@ -27,8 +27,8 @@ app.use("/api", routes);
 app.use(morgan("dev"));
 app.use(cors());
 if (config.mode !== "test") {
-  app.listen(config.port,()=> {
-    console.log(`onectando con el puerto ${config.port} `)
+  app.listen(config.port, () => {
+    console.log(`onectando con el puerto ${config.port} `);
   });
-}
+} 
 module.exports = app;

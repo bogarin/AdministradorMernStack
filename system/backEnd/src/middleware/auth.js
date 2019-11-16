@@ -8,7 +8,9 @@ async function verifyUser(req, res, next) {
   }
   const response = await tokenService.decode(req.headers.token);
   if (!checkIfHasRole(response.rol)) {
-    return res.status(403).send({ message: "no autorizado" });
+    return res
+      .status(403)
+      .send({ message: "no autorizadotoken no autorizado" });
   }
   next();
 }
@@ -22,7 +24,7 @@ async function verifyAdministrator(req, res, next) {
   const response = await tokenService.decode(req.headers.token);
   return response.rol == "administrador"
     ? next()
-    : res.status(403).send({ message: "no autorizado" });
+    : res.status(403).send({ message: "token no autorizado Admin" });
 }
 
 async function verifyStorer(req, res, next) {

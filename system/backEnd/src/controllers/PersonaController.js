@@ -1,11 +1,9 @@
-import Usuario from "../models/Usuario";
-import bcrypt from "bcryptjs";
+import Persona from "../models/Persona";
 import helpers from "../helpers";
-import token from "../services/token";
 
 async function add(req, res, next) {
   if (req.body.nombre != undefined) {
-    return await helpers.UserHelpers.addUserList(Usuario, bcrypt, req)
+    return await Persona.create(req.body)
       .then(reg => {
         res.status(200).send({ message: reg });
       })
@@ -14,12 +12,13 @@ async function add(req, res, next) {
         next(e);
       });
   }
+  console.log(req.body);
   res.status(404).send({ mesage: "no hay informacion" });
 }
 
 async function query(req, res, next) {
   try {
-    const reg = await Usuario.findOne({
+    const reg = await Persona.findOne({
       _id: req.query._id
     });
     if (!reg) {
@@ -54,7 +53,7 @@ async function query(req, res, next) {
 async function list(req, res, next) {
   try {
     let valor = await req.query.valor;
-    const reg = await Usuario.find(
+    const reg = await Persona.find(
       {
         $or: [
           { nombre: new RegExp(valor, "i") },
@@ -74,12 +73,59 @@ async function list(req, res, next) {
   }
 }
 
+async function listClientes(req, res, next) {
+  try {
+    let valor = await req.query.valor;
+    const reg = await Persona.find(
+      {
+        $or: [
+          { nombre: new RegExp(valor, "i") },
+          { email: new RegExp(valor, "i") }
+        ],
+        tipo_persona: "cliente"
+      },
+      { createdAt: 0 }
+    ).sort({ createdAt: -1 });
+    res.status(200).send({
+      message: reg
+    });
+  } catch (e) {
+    res.status(500).send({
+      message: `Error al consutar: ${e}`
+    });
+    next(e);
+  }
+}
+
+async function listProveedores(req, res, next) {
+  try {
+    let valor = await req.query.valor;
+    const reg = await Persona.find(
+      {
+        $or: [
+          { nombre: new RegExp(valor, "i") },
+          { email: new RegExp(valor, "i") }
+        ],
+        tipo_persona: "proveedor"
+      },
+      { createdAt: 0 }
+    ).sort({ createdAt: -1 });
+    res.status(200).send({
+      message: reg
+    });
+  } catch (e) {
+    res.status(500).send({
+      message: `Error al consutar: ${e}`
+    });
+    next(e);
+  }
+}
+
 async function update(req, res, next) {
   try {
-    let oldpwd = await Usuario.findOne({ _id: req.body._id });
-    const reg = await Usuario.findByIdAndUpdate(
+    const reg = await Persona.findByIdAndUpdate(
       { _id: req.body._id },
-      helpers.UserHelpers.CompareToPwdAndUpdateUser(req.body, oldpwd)
+      helpers.PersonaHelpers.UpdatePersona
     );
     res.status(200).send({ message: reg });
   } catch (e) {
@@ -92,7 +138,7 @@ async function update(req, res, next) {
 
 async function remove(req, res, next) {
   try {
-    const reg = await Usuario.findByIdAndDelete({ _id: req.body._id });
+    const reg = await Persona.findByIdAndDelete({ _id: req.body._id });
     res.status(200).send({ message: reg });
   } catch (e) {
     res.status(500).send({
@@ -104,7 +150,7 @@ async function remove(req, res, next) {
 
 async function activate(req, res, next) {
   try {
-    const reg = await Usuario.findByIdAndUpdate(
+    const reg = await Persona.findByIdAndUpdate(
       { _id: req.body._id },
       { estado: 1 }
     );
@@ -119,7 +165,7 @@ async function activate(req, res, next) {
 
 async function deactivate(req, res, next) {
   try {
-    const reg = await Usuario.findByIdAndUpdate(
+    const reg = await Persona.findByIdAndUpdate(
       { _id: req.body._id },
       { estado: 0 }
     );
@@ -132,35 +178,12 @@ async function deactivate(req, res, next) {
   }
 }
 
-async function login(req, res, next) {
-  try {
-    let matchUser = await helpers.UserHelpers.validateUserEmail(
-      req,
-      Usuario,
-      bcrypt
-    );
-    if (matchUser == -1) {
-      res.status(404).send({ message: "No existe el usuario" });
-    }
-    if (!matchUser) {
-      res.status(404).send({ message: "contraseña incorrecta" });
-    }
-
-    let tokenReturn = await token.encode(matchUser._id);
-    res.json({ matchUser, tokenReturn });
-  } catch (err) {
-    res.status(500).send({
-      message: `Èrror en la consulta usuario: ${err}`
-    });
-    next(err);
-  }
-}
-
 module.exports = {
   add,
-  login,
   query,
   list,
+  listClientes,
+  listProveedores,
   update,
   remove,
   activate,
