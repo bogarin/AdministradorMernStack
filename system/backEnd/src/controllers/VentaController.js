@@ -1,13 +1,13 @@
-import Ingreso from "../models/Ingreso";
+import Venta from "../models/Venta";
 import Articulo from "../models/Articulo";
 async function add(req, res, next) {
   if (req.body != "") {
     try {
-      const reg = await Ingreso.create(req.body);
+      const reg = await Venta.create(req.body);
       //aumentar el stock
       const detalles = req.body.detalles;
       detalles.map(articulo => {
-        aumentarStock(articulo._id, articulo.cantidad);
+        disminuirStock(articulo._id, articulo.cantidad);
       });
       res.status(200).send({
         message: reg
@@ -24,7 +24,7 @@ async function add(req, res, next) {
 
 async function query(req, res, next) {
   try {
-    const reg = await Ingreso.findOne({
+    const reg = await Venta.findOne({
       _id: req.query._id
     })
       .populate("usuario", { nombre: 1 })
@@ -61,7 +61,7 @@ async function query(req, res, next) {
 async function list(req, res, next) {
   try {
     let valor = await req.query.valor;
-    const reg = await Ingreso.find({
+    const reg = await Venta.find({
       $or: [
         { num_comprobante: new RegExp(valor, "i") },
         { serie_comprobante: new RegExp(valor, "i") }
@@ -83,31 +83,11 @@ async function list(req, res, next) {
 
 async function activate(req, res, next) {
   try {
-    const reg = await Ingreso.findByIdAndUpdate(
+    const reg = await Venta.findByIdAndUpdate(
       { _id: req.body._id },
       { estado: 1 }
     );
     //aumentar el stock
-    const detalles = reg.detalles;
-    detalles.map(articulo => {
-      aumentarStock(articulo._id, articulo.cantidad);
-    });
-    res.status(200).send({ message: reg });
-  } catch (e) {
-    res.status(500).send({
-      message: `Error al actualizar: ${e}`
-    });
-    next(e);
-  }
-}
-
-async function deactivate(req, res, next) {
-  try {
-    const reg = await Ingreso.findByIdAndUpdate(
-      { _id: req.body._id },
-      { estado: 0 }
-    );
-    //disminuir el stock
     const detalles = reg.detalles;
     detalles.map(articulo => {
       disminuirStock(articulo._id, articulo.cantidad);
@@ -121,9 +101,29 @@ async function deactivate(req, res, next) {
   }
 }
 
+async function deactivate(req, res, next) {
+  try {
+    const reg = await Venta.findByIdAndUpdate(
+      { _id: req.body._id },
+      { estado: 0 }
+    );
+    //disminuir el stock
+    const detalles = reg.detalles;
+    detalles.map(articulo => {
+      aumentarStock(articulo._id, articulo.cantidad);
+    });
+    res.status(200).send({ message: reg });
+  } catch (e) {
+    res.status(500).send({
+      message: `Error al actualizar: ${e}`
+    });
+    next(e);
+  }
+}
+
 async function grafico12Meses(req, res, next) {
   try {
-    let reg = await Ingreso.aggregate([
+    let reg = await Venta.aggregate([
       {
         $group: {
           _id: {
@@ -146,7 +146,6 @@ async function grafico12Meses(req, res, next) {
     next(error);
   }
 }
-
 async function aumentarStock(idArticulo, cantidad) {
   let { stock } = await Articulo.findOne({ _id: idArticulo });
   let newStock = parseInt(stock) + parseInt(cantidad);
