@@ -38,6 +38,27 @@ async function query(req, res, next) {
   }
 }
 
+async function queryCodigo(req, res, next) {
+  try {
+    const reg = await Articulo.findOne({
+      codigo: req.query.codigo
+    }).populate("categoria", { nombre: 1 });
+    if (!reg) {
+      res.status(404).send({
+        message: "El registro no existe"
+      });
+    }
+    res.status(200).send({
+      message: reg
+    });
+  } catch (e) {
+    res.status(500).send({
+      message: `Error al consultar: ${e}`
+    });
+    next(e);
+  }
+}
+
 /*
  * en el metodo find esta asiendo busqueda
  * utilizando la instrucción or escogiendo con
@@ -146,6 +167,7 @@ async function deactivate(req, res, next) {
 module.exports = {
   add,
   query,
+  queryCodigo,
   list,
   update,
   remove,

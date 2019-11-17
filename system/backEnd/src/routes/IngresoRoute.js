@@ -1,0 +1,12 @@
+import routex from "express-promise-router";
+import CtrlIngreso from "../controllers/IngresoControllers";
+import auth from "../middleware/auth";
+const router = routex();
+router.post("/add", auth.verifyStorer, CtrlIngreso.add);
+router.get("/query", auth.verifyStorer, CtrlIngreso.query);
+router.get("/list", auth.verifyStorer, CtrlIngreso.list);
+// router.put("/update",auth.verifyStorer, CtrlIngreso.update);
+// router.put("/activate",auth.verifyStorer, CtrlIngreso.activate);
+router.put("/deactivate", auth.verifyStorer, CtrlIngreso.deactivate);
+router.delete("/remove", auth.verifyStorer, CtrlIngreso.remove);
+module.exports = router;
