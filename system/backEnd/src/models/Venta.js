@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 const schema = mongoose.Schema;
 
 const ventaSchema = new schema({
-  usuario: { type: Schema.ObjectId, ref: "usuario", required: true },
-  persona: { type: Schema.ObjectId, ref: "persona", required: true },
+  usuario: { type: schema.ObjectId, ref: "usuario", required: true },
+  persona: { type: schema.ObjectId, ref: "persona", required: true },
   tipo_comprobante: { type: String, maxlength: 20, required: true },
   serie_comprobante: { type: String, maxlength: 7 },
   num_comprobante: { type: String, maxlength: 10, required: true },

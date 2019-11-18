@@ -1,5 +1,5 @@
 import routex from "express-promise-router";
-import CtrlVenta from "../controllers/VentaControllers";
+import CtrlVenta from "../controllers/VentaController";
 import auth from "../middleware/auth";
 const router = routex();
 router.post("/add", auth.verifySeller, CtrlVenta.add);
@@ -7,5 +7,4 @@ router.get("/query", auth.verifySeller, CtrlVenta.query);
 router.get("/list", auth.verifySeller, CtrlVenta.list);
 router.get("/grafico12meses", auth.verifyUser, CtrlVenta.grafico12Meses);
 router.put("/deactivate", auth.verifySeller, CtrlVenta.deactivate);
-router.delete("/remove", auth.verifySeller, CtrlVenta.remove);
 module.exports = router;
