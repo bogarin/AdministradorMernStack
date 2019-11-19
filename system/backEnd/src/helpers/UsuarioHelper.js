@@ -25,10 +25,12 @@ async function validateUserEmail(req, Usuario, bcrypt) {
   try {
     let user = await Usuario.findOne({ email: req.body.email });
     if (user) {
-        let userPassword = user.password;
-        let reqPassword=req.body.password;
+      let userPassword = user.password;
+      let reqPassword = req.body.password;
       let match = await bcrypt.compare(reqPassword, userPassword);
+      console.log(typeof match);
       console.log(match);
+      console.log("Match:")
       if (match) {
         return user;
       }

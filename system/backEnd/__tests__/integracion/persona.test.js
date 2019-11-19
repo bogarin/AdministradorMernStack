@@ -19,17 +19,25 @@ describe("category class test integration", () => {
   // });
 
   it("should ", async () => {
+    // const res = await request
+    //   .post("/api/usuarios/login")
+    //   .send({
+    //     email: "bogarin@gmail.com",
+    //     password: "ramon"
+    //   })
+    //   .set("Content-type", "application/x-www-form-urlencoded");
+    // console.log(typeof res);
+    // console.log(res.body.message);
+    // expect(res => console.log(res));
+
     const res = await request
       .post("/api/usuarios/login")
       .send({
         email: "bogarin@gmail.com",
-        password:"ramon"
+        password: "ramon"
       })
-      .set("Content-type", "application/x-www-form-urlencoded");
-    console.log(res.tokenReturn);
-    console.log(res.body.message);
-
-
+      .set("Content-type", "application/x-www-form-urlencoded")
+      .expect(res => console.log(res));
   });
 
   afterAll(done => {
